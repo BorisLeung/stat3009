@@ -1,0 +1,36 @@
+SVDpp GridSearchCV
+------------------
+
+param_grid = {
+    "n_epochs": [2500],
+    "lr_all": [0.002, 0.005, 0.01, 0.1],
+    "reg_all": [0.4, 0.6, 0.8, 0.2],
+    "n_factors": [100, 200, 150, 50],
+    "cache_ratings": [True],
+}
+
+0.7299477636156653
+{'rmse': {'n_epochs': 2500, 'lr_all': 0.01, 'reg_all': 0.2, 'n_factors': 150}}
+[Parallel(n_jobs=-1)]: Done 320 out of 320 | elapsed: 61.4min finished
+
+
+.. Remarks: 
+reg_all ~ 0.2
+lr_all ~ 0.01 / 0.005
+n_factors ~ variable
+
+================================================================
+
+SVD GridSearchCV
+----------------
+
+param_grid = {
+    "n_epochs": [2500],
+    "lr_all": [0.002, 0.005, 0.01, 0.1],
+    "reg_all": [0.4, 0.6, 0.8, 0.2],
+    "n_factors": [100, 200, 150, 50],
+}
+
+0.7526654930561751
+{'rmse': {'n_epochs': 2500, 'lr_all': 0.002, 'reg_all': 0.2, 'n_factors': 50}}
+[Parallel(n_jobs=-1)]: Done 320 out of 320 | elapsed:  4.9min finished
