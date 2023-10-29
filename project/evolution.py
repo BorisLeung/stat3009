@@ -66,7 +66,7 @@ class Evolution:
         for evolution in range(evolutions):
             print(f"RUNNING EVOLUTION {len(self.evolution_results)}")
             print("======================================================")
-            model_name = f"{self.model.__name__}_evo({evolution+1}){self.model_suffix}"
+            model_name = f"{self.model.__name__}_evo({len(self.evolution_results)+1}){self.model_suffix}"
             if len(self.evolution_results):
                 best_distributions = self.evolution_results[
                     -1
