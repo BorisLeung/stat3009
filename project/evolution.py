@@ -6,7 +6,6 @@ from predict import predict
 from rv import PositiveInt_rv
 
 import matplotlib.pyplot as plt
-import pandas as pd
 import scipy.stats as st
 from surprise import AlgoBase
 from surprise.dataset import DatasetAutoFolds
