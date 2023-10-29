@@ -78,6 +78,7 @@ class Evolution:
                     for param in best_distributions.keys()
                     if param not in self.int_dist
                     and param not in self.const_params.keys()
+                    and best_distributions[param] is not None
                 }
 
                 param_grid |= {
