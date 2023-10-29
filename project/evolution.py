@@ -1,8 +1,6 @@
 # evolution.py
 from dataclasses import dataclass
 
-from regex import P
-
 from cv_logs import save_model, ParameterSearch
 from predict import predict
 from rv import PositiveInt_rv

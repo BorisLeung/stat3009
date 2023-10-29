@@ -48,7 +48,6 @@ class ParameterSearch:
         filtered_results = filtered_results.rename(
             columns=lambda column_name: column_name[len(PARAMETER_PREFIX) :]
         )
-        plt.figure(figsize=(10, 20))
         for plot_id, column in enumerate(filtered_results):
             plt.subplot(int(filtered_results.shape[0] / 3) + 1, 3, plot_id + 1)
             filtered_results.boxplot([column])
@@ -85,23 +84,32 @@ class ParameterSearch:
                 return None
             dist_names = [
                 "norm",
-                "exponweib",
-                "weibull_max",
-                "weibull_min",
+                "bradford",
                 "pareto",
-                "genextreme",
+                "alpha",
+                "arcsine",
+                "dweibull",
+                "expon",
+                "t",
+                "triang",
+                "uniform",
+                "wrapcauchy",
             ]
             dist_results = []
             params = {}
-            for dist_name in dist_names:
-                dist = getattr(st, dist_name)
-                param = dist.fit(data)
 
-                params[dist_name] = param
-                # Applying the Kolmogorov-Smirnov test
-                D, p = st.kstest(data, dist_name, args=param)
-                # print("p value for " + dist_name + " = " + str(p))
-                dist_results.append((dist_name, p))
+            for dist_name in dist_names:
+                try:
+                    dist = getattr(st, dist_name)
+                    param = dist.fit(data)
+
+                    params[dist_name] = param
+                    # Applying the Kolmogorov-Smirnov test
+                    D, p = st.kstest(data, dist_name, args=param)
+                    # print("p value for " + dist_name + " = " + str(p))
+                    dist_results.append((dist_name, p))
+                except:
+                    print(f"Error fitting {dist_name}")
 
             # select the best fitted distribution
             best_dist, best_p = max(dist_results, key=lambda item: item[1])
