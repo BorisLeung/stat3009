@@ -127,7 +127,7 @@ class Evolution:
         for evolution_result in self.evolution_results:
             errors.append(evolution_result.search.best_score[self.metric])
         plt.figure(figsize=(5, 3))
-        plt.plot(list(range(len(errors))), errors)
+        plt.plot(list(range(1, len(errors) + 1)), errors)
         plt.xlabel("Evolutions")
         plt.ylabel(self.metric)
         plt.show()
