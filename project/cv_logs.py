@@ -116,7 +116,7 @@ class ParameterSearch:
                     except:
                         print(f"Error fitting {dist_name}")
             else:
-                return st.norm(data[0], np.std(data))
+                return "norm", -1, (data[0], np.std(data))
 
             # select the best fitted distribution
             best_dist, best_p = max(dist_results, key=lambda item: item[1])
