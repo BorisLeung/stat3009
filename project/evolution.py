@@ -51,6 +51,7 @@ class Evolution:
         survivals: float | int = 0.25,
         iterations: int = 1000,
         folds: int = 3,
+        norm: bool = True,
         **kwargs,
     ) -> None:
         full_train_set = train_data.build_full_trainset()
@@ -61,13 +62,17 @@ class Evolution:
         else:
             raise ValueError("Unknwon type for `survivals`.")
         for evolution in range(evolutions):
-            print(f"RUNNING EVOLUTION {len(self.evolution_results)}")
-            print("======================================================")
             model_name = f"{self.model.__name__}_evo({len(self.evolution_results)+1}){self.model_suffix}"
+            print(
+                f"RUNNING EVOLUTION {len(self.evolution_results) + 1} | {model_name=}"
+            )
+            print("======================================================")
             if len(self.evolution_results):
                 best_distributions = self.evolution_results[
                     -1
-                ].parameters.get_best_distribution(survival_number, plot=False)
+                ].parameters.get_best_distribution(
+                    survival_number, plot=False, norm=True
+                )
 
                 param_grid = self.const_params.copy()
                 param_grid |= {
@@ -103,6 +108,7 @@ class Evolution:
                 **kwargs,
             )
             rs.fit(train_data)
+            print(f"Train rmse: {rs.best_score['rmse']}")
             ps = ParameterSearch(rs.cv_results)
             ps.write(f"{model_name}.csv")
 
@@ -143,4 +149,6 @@ class Evolution:
         figure = plt.figure(figsize=(5, 3))
         ax = figure.add_axes([0, 0, 1, 1])
         ax.boxplot(data)
+        plt.title(parameter)
+        plt.xlabel("Evolutions")
         plt.show()

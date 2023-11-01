@@ -57,6 +57,7 @@ class ParameterSearch:
         limit: float | int = 0.25,
         constants: Sequence[str] = [],
         plot: bool = True,
+        norm: bool = False,
     ) -> dict:
         if isinstance(limit, float):
             filtered_results = self.results[
@@ -66,6 +67,9 @@ class ParameterSearch:
             filtered_results = self.results[self.results["rank_test_rmse"] <= limit]
         else:
             raise ValueError("percentage with unknown type!")
+        filtered_results = filtered_results.sort_values(
+            by="rank_test_rmse", ascending=True
+        )
         PARAMETER_PREFIX = "param_"
         filtered_results = filtered_results[
             [
@@ -79,37 +83,40 @@ class ParameterSearch:
             columns=lambda column_name: column_name[len(PARAMETER_PREFIX) :]
         )
 
-        def get_best_distribution(data: np.array):
+        def get_best_distribution(data: np.array, norm: bool = False):
             if data.dtype not in (int, float):
                 return None
-            dist_names = [
-                "norm",
-                "bradford",
-                "pareto",
-                "alpha",
-                "arcsine",
-                "dweibull",
-                "expon",
-                "t",
-                "triang",
-                "uniform",
-                "wrapcauchy",
-            ]
-            dist_results = []
-            params = {}
+            if not norm:
+                dist_names = [
+                    "norm",
+                    "bradford",
+                    "pareto",
+                    "alpha",
+                    "arcsine",
+                    "dweibull",
+                    "expon",
+                    "t",
+                    "triang",
+                    "uniform",
+                    "wrapcauchy",
+                ]
+                dist_results = []
+                params = {}
 
-            for dist_name in dist_names:
-                try:
-                    dist = getattr(st, dist_name)
-                    param = dist.fit(data)
+                for dist_name in dist_names:
+                    try:
+                        dist = getattr(st, dist_name)
+                        param = dist.fit(data)
 
-                    params[dist_name] = param
-                    # Applying the Kolmogorov-Smirnov test
-                    D, p = st.kstest(data, dist_name, args=param)
-                    # print("p value for " + dist_name + " = " + str(p))
-                    dist_results.append((dist_name, p))
-                except:
-                    print(f"Error fitting {dist_name}")
+                        params[dist_name] = param
+                        # Applying the Kolmogorov-Smirnov test
+                        D, p = st.kstest(data, dist_name, args=param)
+                        # print("p value for " + dist_name + " = " + str(p))
+                        dist_results.append((dist_name, p))
+                    except:
+                        print(f"Error fitting {dist_name}")
+            else:
+                return st.norm(data[0], np.std(data))
 
             # select the best fitted distribution
             best_dist, best_p = max(dist_results, key=lambda item: item[1])
@@ -122,7 +129,7 @@ class ParameterSearch:
             return best_dist, best_p, params[best_dist]
 
         best_distributions = {
-            column: get_best_distribution(filtered_results[column].values)
+            column: get_best_distribution(filtered_results[column].values, norm)
             for column in filtered_results
             if column not in constants
         }
